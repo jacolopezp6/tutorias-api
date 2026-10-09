@@ -16,7 +16,7 @@ public class Tutor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false, length = 120)
     private String nombre;
@@ -37,7 +37,7 @@ public class Tutor {
         this.area = area;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -24,7 +24,7 @@ public class Tutoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tutor_id", nullable = false)
@@ -61,7 +61,7 @@ public class Tutoria {
         this.limiteParticipantes = limiteParticipantes;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

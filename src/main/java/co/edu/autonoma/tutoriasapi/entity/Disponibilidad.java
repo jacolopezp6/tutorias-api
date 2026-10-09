@@ -21,7 +21,7 @@ public class Disponibilidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tutor_id", nullable = false)
@@ -50,7 +50,7 @@ public class Disponibilidad {
         this.horaFin = horaFin;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -13,7 +13,7 @@ public class Estudiante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false, length = 120)
     private String nombre;
@@ -29,7 +29,7 @@ public class Estudiante {
         this.correo = correo;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

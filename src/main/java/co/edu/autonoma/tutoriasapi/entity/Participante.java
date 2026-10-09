@@ -22,7 +22,7 @@ public class Participante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tutoria_id", nullable = false)
@@ -42,7 +42,7 @@ public class Participante {
         this.estudiante = estudiante;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
