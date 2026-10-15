@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import co.edu.autonoma.tutoriasapi.entity.Tutor;
+import co.edu.autonoma.tutoriasapi.domain.Tutor;
 
 public interface TutorRepository extends JpaRepository<Tutor, Integer> {
 

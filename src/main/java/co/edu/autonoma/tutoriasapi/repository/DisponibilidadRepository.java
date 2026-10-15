@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import co.edu.autonoma.tutoriasapi.entity.Disponibilidad;
+import co.edu.autonoma.tutoriasapi.domain.Disponibilidad;
 
 public interface DisponibilidadRepository extends JpaRepository<Disponibilidad, Integer> {
 

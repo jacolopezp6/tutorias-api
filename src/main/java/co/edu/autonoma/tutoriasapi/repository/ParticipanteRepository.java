@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import co.edu.autonoma.tutoriasapi.entity.Participante;
+import co.edu.autonoma.tutoriasapi.domain.Participante;
 
 public interface ParticipanteRepository extends JpaRepository<Participante, Integer> {
 
