@@ -1,4 +1,4 @@
-package co.edu.autonoma.tutoriasapi.entity;
+package co.edu.autonoma.tutoriasapi.domain;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

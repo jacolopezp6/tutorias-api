@@ -1,4 +1,4 @@
-package co.edu.autonoma.tutoriasapi.entity;
+package co.edu.autonoma.tutoriasapi.domain;
 
 public enum EstadoTutoria {
     PROGRAMADA,
