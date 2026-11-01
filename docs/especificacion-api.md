@@ -1,202 +1,109 @@
-# Especificación de recursos y DTOs de la API de tutorías
+# Contrato actual de la API de tutorías
 
-## 1. Propósito y estado actual
+Este documento describe las rutas que implementa el backend y las reglas que aplica. El modelo sigue el esquema de seis tablas documentado en `ESQUEMA_BASE_DATOS.md`: `areas`, `tutores`, `estudiantes`, `disponibilidades`, `tutorias` y `participantes`.
 
-Este documento define los recursos REST previstos para el aplicativo de tutorías y las clases DTO que reciben información del cliente (`Request`) y la que devuelve la API (`Response`).
+> **Nombres del proyecto:** una propuesta anterior hablaba de `materias`; el esquema aprobado en el repositorio tiene `areas` y la tutoría guarda un `tema`. Por eso la API actual usa `/api/areas` y `tema`. Si el docente pide materias como entidad separada, primero se debe actualizar el esquema y este contrato de forma coordinada.
 
-La implementación actual solo expone `GET /api/estado`, que responde con `EstadoResponse`. Los recursos de estudiantes, tutores, materias y tutorías descritos a continuación son una propuesta; aún no están implementados. Los nombres de campos y reglas se podrán ajustar cuando se acuerden los requisitos del negocio.
+## Respuestas comunes
 
-## 2. Convenciones
+- `200 OK`: consulta o actualización exitosa.
+- `201 Created`: registro creado.
+- `204 No Content`: eliminación, retiro o cancelación exitosa.
+- `400 Bad Request`: datos incompletos o inválidos.
+- `404 Not Found`: no existe el registro indicado.
+- `409 Conflict`: duplicado o conflicto con una regla del proyecto.
 
-- Los recursos se nombran en plural y en minúscula: `/estudiantes`, `/tutores`, `/materias`, `/tutorias`.
-- Los identificadores se representan como `Long` en Java y como números enteros en JSON.
-- Las fechas y horas se envían en formato ISO 8601; por ejemplo, `2026-10-22T14:30:00-05:00`.
-- Las operaciones de creación usan `POST`; las de consulta, `GET`; las de actualización completa, `PUT`; y las de eliminación, `DELETE`.
-- El cliente no envía campos generados por el servidor, como `id` o marcas de tiempo de auditoría.
-- Para solicitudes inválidas se recomienda responder `400 Bad Request`; para un recurso inexistente, `404 Not Found`; para creación exitosa, `201 Created`; para consulta/actualización exitosa, `200 OK`; y para eliminación exitosa sin cuerpo, `204 No Content`.
+Los errores devuelven `fechaHora`, `codigo`, `error` y `mensaje`. Las fechas se envían como `LocalDateTime` ISO 8601, por ejemplo `2026-12-10T10:00:00`, usando hora local de Colombia; el esquema no guarda zona horaria.
 
-## 3. Recursos y operaciones CRUD
+## Estado del servicio
 
-### 3.1 Estudiantes
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/estado` | Comprueba que la API esté disponible. |
 
-Representa a las personas que solicitan tutorías.
+## Áreas
 
-| Método | Ruta | Descripción | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/estudiantes` | Lista estudiantes | — | `List<EstudianteResponse>` |
-| GET | `/api/estudiantes/{id}` | Consulta un estudiante | — | `EstudianteResponse` |
-| POST | `/api/estudiantes` | Registra un estudiante | `EstudianteRequest` | `EstudianteResponse` (201) |
-| PUT | `/api/estudiantes/{id}` | Reemplaza los datos editables | `EstudianteRequest` | `EstudianteResponse` |
-| DELETE | `/api/estudiantes/{id}` | Elimina un estudiante | — | Sin cuerpo (204) |
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/areas` | Lista áreas. |
+| GET | `/api/areas/{id}` | Consulta un área. |
+| POST | `/api/areas` | Crea un área con `nombre`. |
+| PUT | `/api/areas/{id}` | Cambia el nombre. |
+| DELETE | `/api/areas/{id}` | Elimina si no tiene tutores asociados. |
 
-### 3.2 Tutores
+El nombre del área es obligatorio y no puede repetirse.
 
-Representa a las personas que ofrecen tutorías.
+## Tutores
 
-| Método | Ruta | Descripción | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/tutores` | Lista tutores | — | `List<TutorResponse>` |
-| GET | `/api/tutores/{id}` | Consulta un tutor | — | `TutorResponse` |
-| POST | `/api/tutores` | Registra un tutor | `TutorRequest` | `TutorResponse` (201) |
-| PUT | `/api/tutores/{id}` | Reemplaza los datos editables | `TutorRequest` | `TutorResponse` |
-| DELETE | `/api/tutores/{id}` | Elimina un tutor | — | Sin cuerpo (204) |
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/tutores` | Lista tutores. |
+| GET | `/api/tutores/{id}` | Consulta un tutor. |
+| GET | `/api/tutores/{id}/disponibilidad` | Consulta las franjas activas del tutor. |
+| POST | `/api/tutores` | Crea un tutor con `nombre`, `correo` y `areaId`. |
+| PUT | `/api/tutores/{id}` | Actualiza esos datos. |
+| DELETE | `/api/tutores/{id}` | Elimina si no está relacionado con disponibilidades o tutorías. |
 
-### 3.3 Materias
+El correo debe ser válido y único. Una tutoría o disponibilidad relacionada impide borrar el tutor y produce `409 Conflict`.
 
-Catálogo de materias sobre las que se pueden solicitar tutorías.
+## Estudiantes
 
-| Método | Ruta | Descripción | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/materias` | Lista materias | — | `List<MateriaResponse>` |
-| GET | `/api/materias/{id}` | Consulta una materia | — | `MateriaResponse` |
-| POST | `/api/materias` | Crea una materia | `MateriaRequest` | `MateriaResponse` (201) |
-| PUT | `/api/materias/{id}` | Actualiza una materia | `MateriaRequest` | `MateriaResponse` |
-| DELETE | `/api/materias/{id}` | Elimina una materia | — | Sin cuerpo (204) |
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/estudiantes` | Lista estudiantes. |
+| GET | `/api/estudiantes/{id}` | Consulta un estudiante. |
+| POST | `/api/estudiantes` | Crea un estudiante con `nombre` y `correo`. |
+| PUT | `/api/estudiantes/{id}` | Actualiza sus datos. |
+| DELETE | `/api/estudiantes/{id}` | Elimina si no conserva inscripciones. |
 
-### 3.4 Tutorías
+El correo debe ser válido y único. No se guardan notas privadas ni evaluaciones del estudiante.
 
-Representa una sesión solicitada o programada entre un estudiante y un tutor para una materia.
+## Disponibilidades
 
-| Método | Ruta | Descripción | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/tutorias` | Lista tutorías | — | `List<TutoriaResponse>` |
-| GET | `/api/tutorias/{id}` | Consulta una tutoría | — | `TutoriaResponse` |
-| POST | `/api/tutorias` | Solicita una tutoría | `TutoriaRequest` | `TutoriaResponse` (201) |
-| PUT | `/api/tutorias/{id}` | Actualiza fecha, duración, modalidad o estado | `TutoriaRequest` | `TutoriaResponse` |
-| DELETE | `/api/tutorias/{id}` | Elimina/cancela una tutoría | — | Sin cuerpo (204) |
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/tutores/{id}/disponibilidad` | Lista las franjas activas de un tutor. |
+| GET | `/api/disponibilidades?tutorId={id}` | La misma consulta usando el recurso de disponibilidades. |
+| POST | `/api/disponibilidades` | Crea una franja: `tutorId`, `diaSemana`, `horaInicio` y `horaFin`. |
+| PUT | `/api/disponibilidades/{id}` | Cambia una franja. |
+| DELETE | `/api/disponibilidades/{id}` | La desactiva; no borra el registro histórico. |
 
-Para listados, se recomienda agregar paginación y filtros cuando se definan las necesidades de consulta. Por ejemplo: `GET /api/tutorias?estudianteId=12&estado=PROGRAMADA`.
+`diaSemana` acepta `MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`, `SATURDAY` o `SUNDAY`. La hora inicial debe ser anterior a la hora final y las franjas activas del tutor no se pueden cruzar.
 
-### 3.5 Estado del servicio (ya implementado)
+## Tutorías
 
-| Método | Ruta | Descripción | Request | Response |
-|---|---|---|---|---|
-| GET | `/api/estado` | Informa disponibilidad de la API | — | `EstadoResponse` |
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/tutorias` | Lista tutorías; acepta filtros opcionales `tutorId` y `estado`. |
+| GET | `/api/tutorias/{id}` | Consulta una tutoría y su número de inscritos. |
+| POST | `/api/tutorias` | Publica una sesión futura. |
+| PUT | `/api/tutorias/{id}` | Actualiza una tutoría programada. |
+| PATCH | `/api/tutorias/{id}/estado` | Cambia su estado. |
+| DELETE | `/api/tutorias/{id}` | La cancela; conserva el registro. |
 
-Respuesta actual:
+El `POST` recibe `tutorId`, `tema`, `fechaHoraInicio`, `fechaHoraFin` y `limiteParticipantes`. El estado inicial lo asigna el servidor como `PROGRAMADA`.
 
-```json
-{
-  "servicio": "tutorias-api",
-  "estado": "disponible"
-}
-```
+Al publicar o cambiar una sesión, el servicio verifica que:
 
-## 4. Clases Request y Response propuestas
+1. El inicio sea anterior al fin y ambos estén en el futuro.
+2. Toda la sesión quede dentro de una disponibilidad activa del tutor para ese día.
+3. El tutor no tenga otra sesión programada que se cruce.
+4. El límite sea de al menos una persona y no baje del número de inscritos actual.
 
-Los DTOs deben ubicarse en `co.edu.autonoma.tutoriasapi.dto`. Se propone separar los objetos de entrada y salida para controlar qué datos acepta y expone la API.
+Estados disponibles: `PROGRAMADA`, `REALIZADA`, `CANCELADA`. Solo se puede marcar `REALIZADA` después de la hora de fin. Una sesión cancelada o realizada no vuelve a programada. `DELETE` y `PATCH` conservan el historial.
 
-### `EstudianteRequest`
+## Participantes
 
-```json
-{
-  "nombres": "Ana María",
-  "apellidos": "Gómez Ruiz",
-  "correo": "ana@example.com",
-  "telefono": "3001234567"
-}
-```
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/api/tutorias/{id}/participantes` | Lista estudiantes inscritos. |
+| POST | `/api/tutorias/{id}/participantes` | Inscribe usando `estudianteId`. |
+| DELETE | `/api/participantes/{id}` | Retira una inscripción antes de que inicie la tutoría. |
 
-Campos: `nombres` (String, requerido), `apellidos` (String, requerido), `correo` (String, requerido y válido), `telefono` (String, opcional).
+La inscripción se rechaza si la sesión no está programada, ya empezó, el estudiante ya está inscrito o se alcanzó el cupo. La base de datos también impide repetir la pareja tutoría-estudiante.
 
-### `EstudianteResponse`
+## Fuera del alcance actual
 
-```json
-{
-  "id": 1,
-  "nombres": "Ana María",
-  "apellidos": "Gómez Ruiz",
-  "correo": "ana@example.com",
-  "telefono": "3001234567"
-}
-```
-
-Incluye `id` generado por el servidor y los datos públicos del estudiante.
-
-### `TutorRequest`
-
-```json
-{
-  "nombres": "Carlos",
-  "apellidos": "Pérez Díaz",
-  "correo": "carlos@example.com",
-  "telefono": "3107654321",
-  "perfil": "Tutor de matemáticas"
-}
-```
-
-Campos: `nombres`, `apellidos`, `correo` (requeridos), `telefono` y `perfil` (opcionales). La asignación de materias puede administrarse desde el recurso de tutorías o definirse luego como una relación específica.
-
-### `TutorResponse`
-
-Devuelve `id`, `nombres`, `apellidos`, `correo`, `telefono` y `perfil`. No devuelve credenciales ni datos internos.
-
-### `MateriaRequest`
-
-```json
-{
-  "nombre": "Cálculo I",
-  "descripcion": "Límites, derivadas e integrales"
-}
-```
-
-Campos: `nombre` (String, requerido) y `descripcion` (String, opcional).
-
-### `MateriaResponse`
-
-Devuelve `id`, `nombre` y `descripcion`.
-
-### `TutoriaRequest`
-
-```json
-{
-  "estudianteId": 1,
-  "tutorId": 3,
-  "materiaId": 2,
-  "fechaHora": "2026-10-22T14:30:00-05:00",
-  "duracionMinutos": 60,
-  "modalidad": "VIRTUAL",
-  "observaciones": "Repasar ejercicios para el parcial"
-}
-```
-
-Campos: `estudianteId`, `tutorId`, `materiaId`, `fechaHora`, `duracionMinutos` y `modalidad` (requeridos); `observaciones` (opcional). Se recomienda que el estado inicial lo asigne el servidor (por ejemplo, `PENDIENTE`) y no confiarlo al cliente al crear.
-
-### `TutoriaResponse`
-
-Devuelve `id`, los identificadores y nombres de estudiante, tutor y materia, `fechaHora`, `duracionMinutos`, `modalidad`, `estado` y `observaciones`. El estado puede usar valores controlados como `PENDIENTE`, `PROGRAMADA`, `COMPLETADA` y `CANCELADA`; el flujo para cambiarlo debe definirse con las reglas del negocio.
-
-## 5. Organización sugerida en Java
-
-```text
-co.edu.autonoma.tutoriasapi
-├── controller
-│   ├── EstudianteController
-│   ├── TutorController
-│   ├── MateriaController
-│   └── TutoriaController
-├── dto
-│   ├── request
-│   │   ├── EstudianteRequest
-│   │   ├── TutorRequest
-│   │   ├── MateriaRequest
-│   │   └── TutoriaRequest
-│   └── response
-│       ├── EstadoResponse
-│       ├── EstudianteResponse
-│       ├── TutorResponse
-│       ├── MateriaResponse
-│       └── TutoriaResponse
-└── service
-```
-
-Estas clases son una propuesta de contrato, no clases ya presentes en el código. Para Spring, pueden implementarse como `record` de Java y anotarse con validaciones (`@NotBlank`, `@Email`, `@NotNull`, `@Min`) en los campos requeridos. La lógica de persistencia y entidades de base de datos queda fuera del alcance de este documento.
-
-## 6. Decisiones pendientes de negocio
-
-- Si el alta de estudiante/tutor incluye autenticación y manejo de contraseñas.
-- Si un tutor puede ofrecer varias materias y cómo se administra esa relación.
-- Si `DELETE` elimina definitivamente o realiza una baja lógica; en tutorías podría ser preferible cambiar el estado a `CANCELADA`.
-- Si se necesitan endpoints de cambio de estado separados, como `PATCH /api/tutorias/{id}/estado`.
-- Reglas de disponibilidad, solapamiento de horarios, duración y modalidad de las sesiones.
-- Campos personales adicionales que deban recopilarse o protegerse.
+- Inicio de sesión, contraseñas y permisos de usuario: el modelo del proyecto todavía no define autenticación.
+- Fechas especiales o festivos que anulen una disponibilidad semanal.
+- Una entidad separada de materias: está pendiente confirmar si el docente quiere reemplazar o complementar el catálogo de áreas.

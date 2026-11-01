@@ -38,6 +38,9 @@ public class TutorService {
 
     public TutorResponse crear(TutorRequest request) {
         validar(request);
+        if (tutorRepository.existsByCorreoIgnoreCase(request.correo().trim())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un tutor con ese correo");
+        }
         Area area = obtenerArea(request.areaId());
         return toResponse(tutorRepository.save(new Tutor(request.nombre().trim(), request.correo().trim(), area)));
     }
@@ -45,6 +48,9 @@ public class TutorService {
     public TutorResponse actualizar(Integer id, TutorRequest request) {
         validar(request);
         Tutor tutor = obtenerTutor(id);
+        if (tutorRepository.existsByCorreoIgnoreCaseAndIdNot(request.correo().trim(), id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un tutor con ese correo");
+        }
         tutor.setNombre(request.nombre().trim());
         tutor.setCorreo(request.correo().trim());
         tutor.setArea(obtenerArea(request.areaId()));

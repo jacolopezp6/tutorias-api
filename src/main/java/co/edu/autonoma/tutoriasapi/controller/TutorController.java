@@ -3,7 +3,10 @@ package co.edu.autonoma.tutoriasapi.controller;
 import java.net.URI;
 import java.util.List;
 
+import co.edu.autonoma.tutoriasapi.dto.DisponibilidadResponse;
+import co.edu.autonoma.tutoriasapi.service.DisponibilidadService;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,9 +25,11 @@ import co.edu.autonoma.tutoriasapi.service.TutorService;
 public class TutorController {
 
     private final TutorService tutorService;
+    private final DisponibilidadService disponibilidadService;
 
-    public TutorController(TutorService tutorService) {
+    public TutorController(TutorService tutorService, DisponibilidadService disponibilidadService) {
         this.tutorService = tutorService;
+        this.disponibilidadService = disponibilidadService;
     }
 
     @GetMapping
@@ -37,14 +42,19 @@ public class TutorController {
         return tutorService.buscar(id);
     }
 
+    @GetMapping("/{id}/disponibilidad")
+    public List<DisponibilidadResponse> listarDisponibilidad(@PathVariable Integer id) {
+        return disponibilidadService.listarPorTutor(id);
+    }
+
     @PostMapping
-    public ResponseEntity<TutorResponse> crear(@RequestBody TutorRequest request) {
+    public ResponseEntity<TutorResponse> crear(@Valid @RequestBody TutorRequest request) {
         TutorResponse creado = tutorService.crear(request);
         return ResponseEntity.created(URI.create("/api/tutores/" + creado.id())).body(creado);
     }
 
     @PutMapping("/{id}")
-    public TutorResponse actualizar(@PathVariable Integer id, @RequestBody TutorRequest request) {
+    public TutorResponse actualizar(@PathVariable Integer id, @Valid @RequestBody TutorRequest request) {
         return tutorService.actualizar(id, request);
     }
 
