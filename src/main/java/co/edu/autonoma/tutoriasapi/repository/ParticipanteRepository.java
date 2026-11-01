@@ -11,4 +11,8 @@ public interface ParticipanteRepository extends JpaRepository<Participante, Inte
     List<Participante> findByTutoria_Id(Integer tutoriaId);
 
     boolean existsByTutoria_IdAndEstudiante_Id(Integer tutoriaId, Integer estudianteId);
+
+    boolean existsByEstudiante_Id(Integer estudianteId);
+
+    long countByTutoria_Id(Integer tutoriaId);
 }

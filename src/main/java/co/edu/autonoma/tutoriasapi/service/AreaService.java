@@ -33,17 +33,17 @@ public class AreaService {
     }
 
     public AreaResponse crear(AreaRequest request) {
-        if (request == null || request.nombre() == null || request.nombre().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "nombre es obligatorio");
+        if (areaRepository.existsByNombreIgnoreCase(request.nombre().trim())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un área con ese nombre");
         }
         return toResponse(areaRepository.save(new Area(request.nombre().trim())));
     }
 
     public AreaResponse actualizar(Integer id, AreaRequest request) {
-        if (request == null || request.nombre() == null || request.nombre().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "nombre es obligatorio");
-        }
         Area area = obtenerArea(id);
+        if (areaRepository.existsByNombreIgnoreCaseAndIdNot(request.nombre().trim(), id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un área con ese nombre");
+        }
         area.setNombre(request.nombre().trim());
         return toResponse(areaRepository.save(area));
     }

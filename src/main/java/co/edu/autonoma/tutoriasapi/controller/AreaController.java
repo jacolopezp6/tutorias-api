@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,13 +39,13 @@ public class AreaController {
     }
 
     @PostMapping
-    public ResponseEntity<AreaResponse> crear(@RequestBody AreaRequest request) {
+    public ResponseEntity<AreaResponse> crear(@Valid @RequestBody AreaRequest request) {
         AreaResponse creado = areaService.crear(request);
         return ResponseEntity.created(URI.create("/api/areas/" + creado.id())).body(creado);
     }
 
     @PutMapping("/{id}")
-    public AreaResponse actualizar(@PathVariable Integer id, @RequestBody AreaRequest request) {
+    public AreaResponse actualizar(@PathVariable Integer id, @Valid @RequestBody AreaRequest request) {
         return areaService.actualizar(id, request);
     }
 
