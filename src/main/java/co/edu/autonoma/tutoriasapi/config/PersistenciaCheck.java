@@ -6,8 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.edu.autonoma.tutoriasapi.domain.Area;
-import co.edu.autonoma.tutoriasapi.domain.EstadoTutoria;
+import co.edu.autonoma.tutoriasapi.entity.Area;
+import co.edu.autonoma.tutoriasapi.entity.EstadoTutoria;
 import co.edu.autonoma.tutoriasapi.repository.AreaRepository;
 import co.edu.autonoma.tutoriasapi.repository.TutoriaRepository;
 

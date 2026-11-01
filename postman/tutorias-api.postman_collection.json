@@ -1,0 +1,76 @@
+{
+  "info": {
+    "name": "Tutorias API - Areas y tutores",
+    "description": "Pruebas de consulta y CRUD. Ejecuta las solicitudes en orden para usar los IDs creados automáticamente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "areaId", "value": "" },
+    { "key": "tutorId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Crear área",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('areaId', String(pm.response.json().id));"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Matemáticas {{$guid}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/areas"
+      }
+    },
+    {
+      "name": "2. Consultar áreas",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/areas" }
+    },
+    {
+      "name": "3. Consultar un área por ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/areas/{{areaId}}" }
+    },
+    {
+      "name": "4. Crear tutor",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('tutorId', String(pm.response.json().id));"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Ana Pérez\",\n  \"correo\": \"ana.{{$guid}}@example.com\",\n  \"areaId\": {{areaId}}\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/tutores"
+      }
+    },
+    {
+      "name": "5. Consultar todos los tutores",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/tutores" }
+    },
+    {
+      "name": "6. Consultar un tutor por ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/tutores/{{tutorId}}" }
+    },
+    {
+      "name": "7. Modificar tutor",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Ana Pérez Actualizada\",\n  \"correo\": \"ana.actualizada.{{$guid}}@example.com\",\n  \"areaId\": {{areaId}}\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/tutores/{{tutorId}}"
+      }
+    },
+    {
+      "name": "8. Eliminar tutor",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/api/tutores/{{tutorId}}" }
+    },
+    {
+      "name": "9. Modificar área",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Matemáticas actualizada {{$guid}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/areas/{{areaId}}"
+      }
+    },
+    {
+      "name": "10. Eliminar área",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/api/areas/{{areaId}}" }
+    }
+  ]
+}
