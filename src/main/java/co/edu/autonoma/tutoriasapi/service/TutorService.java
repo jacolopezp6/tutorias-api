@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.TutorRequest;
 import co.edu.autonoma.tutoriasapi.dto.TutorResponse;
@@ -16,15 +17,11 @@ import co.edu.autonoma.tutoriasapi.repository.TutorRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TutorService {
 
     private final TutorRepository tutorRepository;
     private final AreaRepository areaRepository;
-
-    public TutorService(TutorRepository tutorRepository, AreaRepository areaRepository) {
-        this.tutorRepository = tutorRepository;
-        this.areaRepository = areaRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<TutorResponse> listar() {
@@ -51,9 +48,7 @@ public class TutorService {
         if (tutorRepository.existsByCorreoIgnoreCaseAndIdNot(request.correo().trim(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un tutor con ese correo");
         }
-        tutor.setNombre(request.nombre().trim());
-        tutor.setCorreo(request.correo().trim());
-        tutor.setArea(obtenerArea(request.areaId()));
+        tutor.actualizarDatos(request.nombre().trim(), request.correo().trim(), obtenerArea(request.areaId()));
         return toResponse(tutorRepository.save(tutor));
     }
 

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.EstudianteRequest;
 import co.edu.autonoma.tutoriasapi.dto.EstudianteResponse;
@@ -15,16 +16,11 @@ import co.edu.autonoma.tutoriasapi.repository.ParticipanteRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EstudianteService {
 
     private final EstudianteRepository estudianteRepository;
     private final ParticipanteRepository participanteRepository;
-
-    public EstudianteService(EstudianteRepository estudianteRepository,
-                             ParticipanteRepository participanteRepository) {
-        this.estudianteRepository = estudianteRepository;
-        this.participanteRepository = participanteRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<EstudianteResponse> listar() {
@@ -50,8 +46,7 @@ public class EstudianteService {
         if (estudianteRepository.existsByCorreoIgnoreCaseAndIdNot(correo, id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un estudiante con ese correo");
         }
-        estudiante.setNombre(request.nombre().trim());
-        estudiante.setCorreo(correo);
+        estudiante.actualizarDatos(request.nombre().trim(), correo);
         return toResponse(estudianteRepository.save(estudiante));
     }
 

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.AreaRequest;
 import co.edu.autonoma.tutoriasapi.dto.AreaResponse;
@@ -14,13 +15,10 @@ import co.edu.autonoma.tutoriasapi.repository.AreaRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AreaService {
 
     private final AreaRepository areaRepository;
-
-    public AreaService(AreaRepository areaRepository) {
-        this.areaRepository = areaRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<AreaResponse> listar() {
@@ -44,7 +42,7 @@ public class AreaService {
         if (areaRepository.existsByNombreIgnoreCaseAndIdNot(request.nombre().trim(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un área con ese nombre");
         }
-        area.setNombre(request.nombre().trim());
+        area.renombrar(request.nombre().trim());
         return toResponse(areaRepository.save(area));
     }
 

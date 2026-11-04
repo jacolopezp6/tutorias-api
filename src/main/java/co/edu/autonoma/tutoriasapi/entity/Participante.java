@@ -12,12 +12,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "participantes", uniqueConstraints = {
         @UniqueConstraint(name = "uk_participante_tutoria_estudiante",
                 columnNames = {"tutoria_id", "estudiante_id"})
 })
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Participante {
 
     @Id
@@ -35,34 +40,15 @@ public class Participante {
     @Column(name = "fecha_inscripcion", nullable = false, updatable = false)
     private LocalDateTime fechaInscripcion = LocalDateTime.now();
 
-    protected Participante() {
-    }
-
     public Participante(Estudiante estudiante) {
         this.estudiante = estudiante;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public Tutoria getTutoria() {
-        return tutoria;
-    }
-
-    public void setTutoria(Tutoria tutoria) {
+    void asignarTutoria(Tutoria tutoria) {
         this.tutoria = tutoria;
     }
 
-    public Estudiante getEstudiante() {
-        return estudiante;
-    }
-
-    public void setEstudiante(Estudiante estudiante) {
-        this.estudiante = estudiante;
-    }
-
-    public LocalDateTime getFechaInscripcion() {
-        return fechaInscripcion;
+    void quitarDeTutoria() {
+        this.tutoria = null;
     }
 }

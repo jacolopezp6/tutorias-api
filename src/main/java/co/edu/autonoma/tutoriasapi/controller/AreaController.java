@@ -3,6 +3,7 @@ package co.edu.autonoma.tutoriasapi.controller;
 import java.net.URI;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +21,10 @@ import co.edu.autonoma.tutoriasapi.service.AreaService;
 
 @RestController
 @RequestMapping("/api/areas")
+@RequiredArgsConstructor
 public class AreaController {
 
     private final AreaService areaService;
-
-    public AreaController(AreaService areaService) {
-        this.areaService = areaService;
-    }
 
     @GetMapping
     public List<AreaResponse> listar() {

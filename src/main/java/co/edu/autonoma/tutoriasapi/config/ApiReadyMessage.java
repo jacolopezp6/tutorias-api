@@ -4,8 +4,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class ApiReadyMessage {
 
     @EventListener(ApplicationReadyEvent.class)
@@ -14,7 +16,7 @@ public class ApiReadyMessage {
         String puerto = contexto.getEnvironment().getProperty("local.server.port",
                 contexto.getEnvironment().getProperty("server.port", "8080"));
         String baseUrl = "http://localhost:" + puerto;
-        System.out.println("API lista para probar en Postman: " + baseUrl);
-        System.out.println("Ejemplo: GET " + baseUrl + "/api/tutores");
+        log.info("API lista para probar en Postman: {}", baseUrl);
+        log.info("Ejemplo: GET {}/api/tutores", baseUrl);
     }
 }

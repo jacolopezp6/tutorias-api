@@ -3,6 +3,7 @@ package co.edu.autonoma.tutoriasapi.controller;
 import java.net.URI;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import co.edu.autonoma.tutoriasapi.dto.DisponibilidadResponse;
 import co.edu.autonoma.tutoriasapi.service.DisponibilidadService;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +23,11 @@ import co.edu.autonoma.tutoriasapi.service.TutorService;
 
 @RestController
 @RequestMapping("/api/tutores")
+@RequiredArgsConstructor
 public class TutorController {
 
     private final TutorService tutorService;
     private final DisponibilidadService disponibilidadService;
-
-    public TutorController(TutorService tutorService, DisponibilidadService disponibilidadService) {
-        this.tutorService = tutorService;
-        this.disponibilidadService = disponibilidadService;
-    }
 
     @GetMapping
     public List<TutorResponse> listar() {

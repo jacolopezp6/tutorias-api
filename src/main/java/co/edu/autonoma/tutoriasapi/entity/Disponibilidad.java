@@ -14,9 +14,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "disponibilidades")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Disponibilidad {
 
     @Id
@@ -40,9 +45,6 @@ public class Disponibilidad {
     @Column(nullable = false)
     private boolean activa = true;
 
-    protected Disponibilidad() {
-    }
-
     public Disponibilidad(Tutor tutor, DayOfWeek diaSemana, LocalTime horaInicio, LocalTime horaFin) {
         this.tutor = tutor;
         this.diaSemana = diaSemana;
@@ -50,47 +52,15 @@ public class Disponibilidad {
         this.horaFin = horaFin;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public Tutor getTutor() {
-        return tutor;
-    }
-
-    public void setTutor(Tutor tutor) {
+    public void actualizar(Tutor tutor, DayOfWeek diaSemana, LocalTime horaInicio, LocalTime horaFin) {
         this.tutor = tutor;
-    }
-
-    public DayOfWeek getDiaSemana() {
-        return diaSemana;
-    }
-
-    public void setDiaSemana(DayOfWeek diaSemana) {
         this.diaSemana = diaSemana;
-    }
-
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
-
-    public void setHoraInicio(LocalTime horaInicio) {
         this.horaInicio = horaInicio;
-    }
-
-    public LocalTime getHoraFin() {
-        return horaFin;
-    }
-
-    public void setHoraFin(LocalTime horaFin) {
         this.horaFin = horaFin;
+        this.activa = true;
     }
 
-    public boolean isActiva() {
-        return activa;
-    }
-
-    public void setActiva(boolean activa) {
-        this.activa = activa;
+    public void desactivar() {
+        this.activa = false;
     }
 }

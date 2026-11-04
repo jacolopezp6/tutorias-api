@@ -17,9 +17,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tutorias")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tutoria {
 
     @Id
@@ -47,10 +52,8 @@ public class Tutoria {
     private EstadoTutoria estado = EstadoTutoria.PROGRAMADA;
 
     @OneToMany(mappedBy = "tutoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Getter(AccessLevel.NONE)
     private List<Participante> participantes = new ArrayList<>();
-
-    protected Tutoria() {
-    }
 
     public Tutoria(Tutor tutor, String tema, LocalDateTime fechaHoraInicio,
                    LocalDateTime fechaHoraFin, Integer limiteParticipantes) {
@@ -61,69 +64,39 @@ public class Tutoria {
         this.limiteParticipantes = limiteParticipantes;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public Tutor getTutor() {
-        return tutor;
-    }
-
-    public void setTutor(Tutor tutor) {
+    public void actualizar(Tutor tutor, String tema, LocalDateTime fechaHoraInicio,
+                           LocalDateTime fechaHoraFin, Integer limiteParticipantes) {
+        exigirProgramada();
         this.tutor = tutor;
-    }
-
-    public String getTema() {
-        return tema;
-    }
-
-    public void setTema(String tema) {
         this.tema = tema;
-    }
-
-    public LocalDateTime getFechaHoraInicio() {
-        return fechaHoraInicio;
-    }
-
-    public void setFechaHoraInicio(LocalDateTime fechaHoraInicio) {
         this.fechaHoraInicio = fechaHoraInicio;
-    }
-
-    public LocalDateTime getFechaHoraFin() {
-        return fechaHoraFin;
-    }
-
-    public void setFechaHoraFin(LocalDateTime fechaHoraFin) {
         this.fechaHoraFin = fechaHoraFin;
-    }
-
-    public Integer getLimiteParticipantes() {
-        return limiteParticipantes;
-    }
-
-    public void setLimiteParticipantes(Integer limiteParticipantes) {
         this.limiteParticipantes = limiteParticipantes;
     }
 
-    public EstadoTutoria getEstado() {
-        return estado;
+    public void cancelar() {
+        exigirProgramada();
+        this.estado = EstadoTutoria.CANCELADA;
     }
 
-    public void setEstado(EstadoTutoria estado) {
-        this.estado = estado;
-    }
-
-    public List<Participante> getParticipantes() {
-        return participantes;
+    public void marcarRealizada() {
+        exigirProgramada();
+        this.estado = EstadoTutoria.REALIZADA;
     }
 
     public void agregarParticipante(Participante participante) {
         participantes.add(participante);
-        participante.setTutoria(this);
+        participante.asignarTutoria(this);
     }
 
     public void retirarParticipante(Participante participante) {
         participantes.remove(participante);
-        participante.setTutoria(null);
+        participante.quitarDeTutoria();
+    }
+
+    private void exigirProgramada() {
+        if (estado != EstadoTutoria.PROGRAMADA) {
+            throw new IllegalStateException("Solo se pueden cambiar tutorías que estén programadas");
+        }
     }
 }

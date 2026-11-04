@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.DisponibilidadRequest;
 import co.edu.autonoma.tutoriasapi.dto.DisponibilidadResponse;
@@ -16,15 +17,11 @@ import co.edu.autonoma.tutoriasapi.repository.TutorRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DisponibilidadService {
 
     private final DisponibilidadRepository disponibilidadRepository;
     private final TutorRepository tutorRepository;
-
-    public DisponibilidadService(DisponibilidadRepository disponibilidadRepository, TutorRepository tutorRepository) {
-        this.disponibilidadRepository = disponibilidadRepository;
-        this.tutorRepository = tutorRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<DisponibilidadResponse> listarPorTutor(Integer tutorId) {
@@ -47,11 +44,7 @@ public class DisponibilidadService {
                         "No existe una disponibilidad con ese id"));
         Tutor tutor = obtenerTutorParaActualizar(request.tutorId());
         validarCruce(request, tutor.getId(), id);
-        disponibilidad.setTutor(tutor);
-        disponibilidad.setDiaSemana(request.diaSemana());
-        disponibilidad.setHoraInicio(request.horaInicio());
-        disponibilidad.setHoraFin(request.horaFin());
-        disponibilidad.setActiva(true);
+        disponibilidad.actualizar(tutor, request.diaSemana(), request.horaInicio(), request.horaFin());
         return toResponse(disponibilidadRepository.save(disponibilidad));
     }
 
@@ -59,7 +52,7 @@ public class DisponibilidadService {
         Disponibilidad disponibilidad = disponibilidadRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "No existe una disponibilidad con ese id"));
-        disponibilidad.setActiva(false);
+        disponibilidad.desactivar();
     }
 
     private void validarHorario(DisponibilidadRequest request) {
