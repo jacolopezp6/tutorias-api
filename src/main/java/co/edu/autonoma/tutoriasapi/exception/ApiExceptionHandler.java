@@ -23,6 +23,14 @@ public class ApiExceptionHandler {
         return respuesta(status, excepcion.getReason() == null ? status.getReasonPhrase() : excepcion.getReason());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiErrorResponse> manejarReglaDeEstado(IllegalStateException excepcion) {
+        String mensaje = excepcion.getMessage() == null
+                ? "La operación no es válida para el estado actual del registro"
+                : excepcion.getMessage();
+        return respuesta(HttpStatus.CONFLICT, mensaje);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> manejarValidacion(MethodArgumentNotValidException excepcion) {
         String mensaje = excepcion.getBindingResult().getFieldErrors().stream()

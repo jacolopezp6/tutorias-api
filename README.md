@@ -23,6 +23,15 @@ Necesitas Java 21, PostgreSQL y la contraseña del usuario de la base de datos.
 
 La conexión local está definida en `src/main/resources/application.properties`. Hibernate crea o actualiza las tablas al iniciar (`ddl-auto=update`). No subas contraseñas al repositorio.
 
+## Lombok
+
+Lombok ya está incluido como dependencia de compilación. En IntelliJ activa **Settings > Build, Execution, Deployment > Compiler > Annotation Processors > Enable annotation processing** y recarga Maven si el editor no reconoce los métodos generados.
+
+- Los servicios y controladores usan `@RequiredArgsConstructor` para crear sus constructores de inyección a partir de los campos `final`.
+- Las entidades usan `@Getter` y un constructor vacío protegido para JPA. Sus cambios se hacen con métodos como `cancelar()` y `desactivar()`.
+- Los mensajes de inicio y persistencia usan `@Slf4j` para escribir al registro de la aplicación.
+- No uses `@Data` ni `@Setter` en las entidades: podrían permitir cambios que salten las reglas del proyecto.
+
 ## Comprobar que funciona
 
 Al terminar el inicio, la consola imprime la dirección de la API y un ejemplo de ruta. La raíz `http://localhost:8080` no es una página web; puede mostrar 404 y eso es normal.

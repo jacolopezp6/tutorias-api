@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.ParticipanteRequest;
 import co.edu.autonoma.tutoriasapi.dto.ParticipanteResponse;
@@ -20,19 +21,12 @@ import co.edu.autonoma.tutoriasapi.repository.TutoriaRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ParticipanteService {
 
     private final ParticipanteRepository participanteRepository;
     private final TutoriaRepository tutoriaRepository;
     private final EstudianteRepository estudianteRepository;
-
-    public ParticipanteService(ParticipanteRepository participanteRepository,
-                               TutoriaRepository tutoriaRepository,
-                               EstudianteRepository estudianteRepository) {
-        this.participanteRepository = participanteRepository;
-        this.tutoriaRepository = tutoriaRepository;
-        this.estudianteRepository = estudianteRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<ParticipanteResponse> listarPorTutoria(Integer tutoriaId) {

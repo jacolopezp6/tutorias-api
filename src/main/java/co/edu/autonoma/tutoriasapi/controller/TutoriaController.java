@@ -3,6 +3,7 @@ package co.edu.autonoma.tutoriasapi.controller;
 import java.net.URI;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +25,10 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/tutorias")
+@RequiredArgsConstructor
 public class TutoriaController {
 
     private final TutoriaService tutoriaService;
-
-    public TutoriaController(TutoriaService tutoriaService) {
-        this.tutoriaService = tutoriaService;
-    }
 
     @GetMapping
     public List<TutoriaResponse> listar(@RequestParam(required = false) Integer tutorId,

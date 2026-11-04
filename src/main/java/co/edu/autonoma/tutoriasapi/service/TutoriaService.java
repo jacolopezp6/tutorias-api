@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 import co.edu.autonoma.tutoriasapi.dto.EstadoTutoriaRequest;
 import co.edu.autonoma.tutoriasapi.dto.TutoriaRequest;
@@ -22,21 +23,13 @@ import co.edu.autonoma.tutoriasapi.repository.TutorRepository;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TutoriaService {
 
     private final TutoriaRepository tutoriaRepository;
     private final TutorRepository tutorRepository;
     private final DisponibilidadRepository disponibilidadRepository;
     private final ParticipanteRepository participanteRepository;
-
-    public TutoriaService(TutoriaRepository tutoriaRepository, TutorRepository tutorRepository,
-                          DisponibilidadRepository disponibilidadRepository,
-                          ParticipanteRepository participanteRepository) {
-        this.tutoriaRepository = tutoriaRepository;
-        this.tutorRepository = tutorRepository;
-        this.disponibilidadRepository = disponibilidadRepository;
-        this.participanteRepository = participanteRepository;
-    }
 
     @Transactional(readOnly = true)
     public List<TutoriaResponse> listar(Integer tutorId, EstadoTutoria estado) {
@@ -66,14 +59,12 @@ public class TutoriaService {
         validarCruce(tutor.getId(), request.fechaHoraInicio(), request.fechaHoraFin(), null);
         Tutoria tutoria = new Tutoria(tutor, request.tema().trim(), request.fechaHoraInicio(),
                 request.fechaHoraFin(), request.limiteParticipantes());
-        tutoria.setEstado(EstadoTutoria.PROGRAMADA);
         return toResponse(tutoriaRepository.save(tutoria));
     }
 
     public TutoriaResponse actualizar(Integer id, TutoriaRequest request) {
         validarDatos(request);
         Tutoria tutoria = obtenerForUpdate(id);
-        exigirProgramada(tutoria);
         if (participanteRepository.countByTutoria_Id(id) > request.limiteParticipantes()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "El nuevo límite no puede ser menor al número de estudiantes inscritos");
@@ -81,11 +72,8 @@ public class TutoriaService {
         Tutor tutor = obtenerTutorParaActualizar(request.tutorId());
         validarDisponibilidad(tutor.getId(), request.fechaHoraInicio(), request.fechaHoraFin());
         validarCruce(tutor.getId(), request.fechaHoraInicio(), request.fechaHoraFin(), id);
-        tutoria.setTutor(tutor);
-        tutoria.setTema(request.tema().trim());
-        tutoria.setFechaHoraInicio(request.fechaHoraInicio());
-        tutoria.setFechaHoraFin(request.fechaHoraFin());
-        tutoria.setLimiteParticipantes(request.limiteParticipantes());
+        tutoria.actualizar(tutor, request.tema().trim(), request.fechaHoraInicio(),
+                request.fechaHoraFin(), request.limiteParticipantes());
         return toResponse(tutoriaRepository.save(tutoria));
     }
 
@@ -95,7 +83,6 @@ public class TutoriaService {
         if (tutoria.getEstado() == nuevoEstado) {
             return toResponse(tutoria);
         }
-        exigirProgramada(tutoria);
         if (nuevoEstado == EstadoTutoria.REALIZADA && tutoria.getFechaHoraFin().isAfter(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "La tutoría solo puede marcarse realizada después de su hora de finalización");
@@ -104,7 +91,14 @@ public class TutoriaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "No se puede cancelar una tutoría que ya inició");
         }
-        tutoria.setEstado(nuevoEstado);
+        if (nuevoEstado == EstadoTutoria.REALIZADA) {
+            tutoria.marcarRealizada();
+        } else if (nuevoEstado == EstadoTutoria.CANCELADA) {
+            tutoria.cancelar();
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Una tutoría cancelada o realizada no puede volver a programarse");
+        }
         return toResponse(tutoriaRepository.save(tutoria));
     }
 
@@ -113,12 +107,11 @@ public class TutoriaService {
         if (tutoria.getEstado() == EstadoTutoria.CANCELADA) {
             return;
         }
-        exigirProgramada(tutoria);
         if (!tutoria.getFechaHoraInicio().isAfter(LocalDateTime.now())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "No se puede cancelar una tutoría que ya inició");
         }
-        tutoria.setEstado(EstadoTutoria.CANCELADA);
+        tutoria.cancelar();
     }
 
     private void validarDatos(TutoriaRequest request) {
@@ -169,13 +162,6 @@ public class TutoriaService {
         if (seCruza) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "El tutor ya tiene otra tutoría programada que se cruza con ese horario");
-        }
-    }
-
-    private void exigirProgramada(Tutoria tutoria) {
-        if (tutoria.getEstado() != EstadoTutoria.PROGRAMADA) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Solo se pueden cambiar tutorías que estén programadas");
         }
     }
 

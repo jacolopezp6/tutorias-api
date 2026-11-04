@@ -6,9 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "estudiantes")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Estudiante {
 
     @Id
@@ -21,31 +26,13 @@ public class Estudiante {
     @Column(nullable = false, unique = true, length = 160)
     private String correo;
 
-    protected Estudiante() {
-    }
-
     public Estudiante(String nombre, String correo) {
         this.nombre = nombre;
         this.correo = correo;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
+    public void actualizarDatos(String nombre, String correo) {
         this.nombre = nombre;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
         this.correo = correo;
     }
 }

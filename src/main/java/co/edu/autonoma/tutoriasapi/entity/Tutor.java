@@ -9,9 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tutores")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Tutor {
 
     @Id
@@ -28,40 +33,15 @@ public class Tutor {
     @JoinColumn(name = "area_id", nullable = false)
     private Area area;
 
-    protected Tutor() {
-    }
-
     public Tutor(String nombre, String correo, Area area) {
         this.nombre = nombre;
         this.correo = correo;
         this.area = area;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
+    public void actualizarDatos(String nombre, String correo, Area area) {
         this.nombre = nombre;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
         this.correo = correo;
-    }
-
-    public Area getArea() {
-        return area;
-    }
-
-    public void setArea(Area area) {
         this.area = area;
     }
 }
