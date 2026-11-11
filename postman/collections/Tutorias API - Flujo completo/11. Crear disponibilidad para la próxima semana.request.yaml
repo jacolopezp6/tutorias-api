@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/disponibilidades"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tutorId": {{tutorId}},
+      "diaSemana": "{{diaSemana}}",
+      "horaInicio": "08:00:00",
+      "horaFin": "18:00:00"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const fecha = new Date();
+      fecha.setDate(fecha.getDate() + 7);
+      const dias = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+      pm.collectionVariables.set('diaSemana', dias[fecha.getDay()]);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Disponibilidad creada', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('disponibilidadId', String(pm.response.json().id));
+    language: text/javascript
+order: 15000

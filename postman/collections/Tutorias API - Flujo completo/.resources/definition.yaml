@@ -1,0 +1,15 @@
+$kind: collection
+description: Ejecuta en orden para crear el área, tutor, estudiante, disponibilidad, tutoría e inscripción. Las solicitudes finales prueban las reglas de conflicto.
+variables:
+  baseUrl: http://localhost:8080
+  areaId: ""
+  tutorId: ""
+  estudianteId: ""
+  disponibilidadId: ""
+  tutoriaId: ""
+  participanteId: ""
+  diaSemana: ""
+  fechaHoraInicio: ""
+  fechaHoraFin: ""
+  fechaHoraInicioActualizada: ""
+  fechaHoraFinActualizada: ""

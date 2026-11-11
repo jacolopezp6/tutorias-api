@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutorias/{{tutoriaId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tutorId": {{tutorId}},
+      "tema": "Repaso de matemáticas actualizado",
+      "fechaHoraInicio": "{{fechaHoraInicioActualizada}}",
+      "fechaHoraFin": "{{fechaHoraFinActualizada}}",
+      "limiteParticipantes": 1
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('Tutoría modificada', () => pm.response.to.have.status(200));
+    language: text/javascript
+order: 18000

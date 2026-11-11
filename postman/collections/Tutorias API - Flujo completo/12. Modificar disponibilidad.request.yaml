@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/api/disponibilidades/{{disponibilidadId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tutorId": {{tutorId}},
+      "diaSemana": "{{diaSemana}}",
+      "horaInicio": "08:00:00",
+      "horaFin": "19:00:00"
+    }
+order: 16000

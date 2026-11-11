@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8080/api/areas/{{areaId}}
+method: GET
+order: 4000

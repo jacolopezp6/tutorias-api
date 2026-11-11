@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutorias/{{tutoriaId}}/estado"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "estado": "CANCELADA"
+    }
+order: 26000

@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/api/participantes/{{participanteId}}"
+method: DELETE
+order: 24000

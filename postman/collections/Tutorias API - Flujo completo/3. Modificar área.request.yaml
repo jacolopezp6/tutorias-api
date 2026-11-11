@@ -1,0 +1,12 @@
+$kind: http-request
+url: http://localhost:8080/api/areas/{{areaId}}
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Ciencias {{$guid}}"
+    }
+order: 5000

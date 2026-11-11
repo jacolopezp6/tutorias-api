@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/api/estudiantes/{{estudianteId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Ana Estudiante Actualizada",
+      "correo": "ana.{{$guid}}@example.com"
+    }
+order: 14000

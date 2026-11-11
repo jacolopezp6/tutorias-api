@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutores/{{tutorId}}/disponibilidad"
+method: GET
+order: 9000
