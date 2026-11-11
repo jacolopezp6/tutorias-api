@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutorias/{{tutoriaId}}/participantes"
+method: GET
+order: 22000

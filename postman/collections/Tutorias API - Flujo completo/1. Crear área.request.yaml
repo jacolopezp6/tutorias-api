@@ -1,0 +1,18 @@
+$kind: http-request
+url: http://localhost:8080/api/areas
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Matemáticas {{$guid}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Área creada', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('areaId', String(pm.response.json().id));
+    language: text/javascript
+order: 2000

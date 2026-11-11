@@ -1,0 +1,36 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutorias"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tutorId": {{tutorId}},
+      "tema": "Repaso de matemáticas",
+      "fechaHoraInicio": "{{fechaHoraInicio}}",
+      "fechaHoraFin": "{{fechaHoraFin}}",
+      "limiteParticipantes": 1
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const inicio = new Date();
+      inicio.setDate(inicio.getDate() + 7);
+      inicio.setHours(10, 0, 0, 0);
+      const fin = new Date(inicio.getTime() + 60 * 60 * 1000);
+      const inicioActualizado = new Date(inicio.getTime() + 60 * 60 * 1000);
+      const finActualizado = new Date(inicioActualizado.getTime() + 60 * 60 * 1000);
+      const formato = fecha => `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}:00`;
+      pm.collectionVariables.set('fechaHoraInicio', formato(inicio));
+      pm.collectionVariables.set('fechaHoraFin', formato(fin));
+      pm.collectionVariables.set('fechaHoraInicioActualizada', formato(inicioActualizado));
+      pm.collectionVariables.set('fechaHoraFinActualizada', formato(finActualizado));
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Tutoría creada', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('tutoriaId', String(pm.response.json().id));
+    language: text/javascript
+order: 17000

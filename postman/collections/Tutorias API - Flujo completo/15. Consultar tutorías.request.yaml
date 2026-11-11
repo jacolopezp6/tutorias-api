@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/api/tutorias?tutorId={{tutorId}}&estado=PROGRAMADA"
+method: GET
+queryParams:
+  tutorId: "{{tutorId}}"
+  estado: PROGRAMADA
+order: 19000

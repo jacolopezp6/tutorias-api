@@ -1,0 +1,20 @@
+$kind: http-request
+url: http://localhost:8080/api/tutores
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Carlos Tutor",
+      "correo": "carlos.{{$guid}}@example.com",
+      "areaId": {{areaId}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Tutor creado', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('tutorId', String(pm.response.json().id));
+    language: text/javascript
+order: 6000
